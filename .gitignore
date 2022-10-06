@@ -12,7 +12,7 @@
 /frontend/yarn-error.log
 
 # IDEs and editors
-/frontend/.idea/
+/frontend/.idea/*
 /frontend/.project
 /frontend/.classpath
 /frontend/.c9/
