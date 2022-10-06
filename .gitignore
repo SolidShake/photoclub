@@ -12,21 +12,21 @@
 /frontend/yarn-error.log
 
 # IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+/frontend/.idea/
+/frontend/.project
+/frontend/.classpath
+/frontend/.c9/
+/frontend/*.launch
+/frontend/.settings/
+/frontend/*.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
+/frontend/.vscode/*
+!/frontend/.vscode/settings.json
+!/frontend/.vscode/tasks.json
+!/frontend/.vscode/launch.json
+!/frontend/.vscode/extensions.json
+/frontend/.history/*
 
 # Miscellaneous
 /frontend/.angular/cache
@@ -38,5 +38,5 @@
 /frontend/typings
 
 # System files
-.DS_Store
-Thumbs.db
+/frontend/.DS_Store
+/frontend/Thumbs.db
