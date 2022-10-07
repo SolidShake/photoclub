@@ -1,43 +1,26 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Compiled output
-/frontend/dist
-/frontend/tmp
-/frontend/out-tsc
-/frontend/bazel-out
-
-# Node
+# dependencies
 /frontend/node_modules
-/frontend/npm-debug.log
-/frontend/yarn-error.log
+/frontend/.pnp
+/frontend/.pnp.js
+
+# testing
+/frontend/coverage
+
+# production
+/frontend/build
+
+# misc
+/frontend/.DS_Store
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
 
 # IDEs and editors
-.idea/
-/frontend/.idea/
-/frontend/.project
-/frontend/.classpath
-/frontend/.c9/
-/frontend/*.launch
-/frontend/.settings/
-/frontend/*.sublime-workspace
-
-# Visual Studio Code
-/frontend/.vscode/*
-!/frontend/.vscode/settings.json
-!/frontend/.vscode/tasks.json
-!/frontend/.vscode/launch.json
-!/frontend/.vscode/extensions.json
-/frontend/.history/*
-
-# Miscellaneous
-/frontend/.angular/cache
-/frontend/.sass-cache/
-/frontend/connect.lock
-/frontend/coverage
-/frontend/libpeerconnection.log
-/frontend/testem.log
-/frontend/typings
-
-# System files
-/frontend/.DS_Store
-/frontend/Thumbs.db
+/.idea/
