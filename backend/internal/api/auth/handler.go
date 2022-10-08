@@ -3,27 +3,36 @@ package auth
 import (
 	"net/http"
 
+	coreUser "github.com/SolidShake/photoclub/internal/core/user"
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
 // Auth godoc
 // @Summary      Auth
-// @Description  get user info
+// @Description  Login user
 // @Tags         accounts
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  interface{}
-// @Failure      400  {object}  interface{}
+// @Failure      401  {object}  interface{}
 // @Security     ApiKeyAuth
 // @Router       /auth/login [post]
-func Login(ctx *gin.Context) {
-	authHeader := ctx.GetHeader("Authorization")
-	if len(authHeader) == 0 {
-		// return error
+func Login(c *gin.Context) (interface{}, error) {
+	var loginVals login
+	if err := c.ShouldBind(&loginVals); err != nil {
+		return "", jwt.ErrMissingLoginValues
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"token": "test-token",
-	})
+	email := loginVals.Email
+	password := loginVals.Password
+
+	if (email == "admin" && password == "admin") || (email == "test" && password == "test") {
+		return &coreUser.User{
+			Email: email,
+		}, nil
+	}
+
+	return nil, ErrFailedAuthentication
 }
 
 // Auth godoc
