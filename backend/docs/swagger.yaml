@@ -17,7 +17,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: get user info
+      description: Login user
       produces:
       - application/json
       responses:
@@ -25,8 +25,8 @@ paths:
           description: OK
           schema:
             type: object
-        "400":
-          description: Bad Request
+        "401":
+          description: Unauthorized
           schema:
             type: object
       security:

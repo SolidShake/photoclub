@@ -9,6 +9,7 @@ import (
 	_ "github.com/SolidShake/photoclub/docs"
 
 	apiAuth "github.com/SolidShake/photoclub/internal/api/auth"
+	apiUser "github.com/SolidShake/photoclub/internal/api/user"
 )
 
 // @title           Photoclub API
@@ -34,12 +35,23 @@ import (
 func main() {
 	r := gin.Default()
 
+	authMiddleware, err := apiAuth.AuthMiddleware()
+	if err != nil {
+		panic(err)
+	}
+
 	v1 := r.Group("/api/v1")
 	{
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/register", apiAuth.Register)
-			auth.POST("/login", apiAuth.Login)
+			auth.POST("/login", authMiddleware.LoginHandler)
+			auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+		}
+		user := v1.Group("/user")
+		user.Use(authMiddleware.MiddlewareFunc())
+		{
+			user.GET("", apiUser.UserHandler)
 		}
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

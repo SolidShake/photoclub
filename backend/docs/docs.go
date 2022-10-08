@@ -32,7 +32,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get user info",
+                "description": "Login user",
                 "consumes": [
                     "application/json"
                 ],
@@ -50,8 +50,8 @@ const docTemplate = `{
                             "type": "object"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "object"
                         }
