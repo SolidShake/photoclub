@@ -34,6 +34,27 @@ paths:
       summary: Auth
       tags:
       - accounts
+  /auth/refresh_token:
+    get:
+      consumes:
+      - application/json
+      description: Refresh user login token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Auth
+      tags:
+      - accounts
   /auth/register:
     post:
       consumes:

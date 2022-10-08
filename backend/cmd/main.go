@@ -44,9 +44,7 @@ func main() {
 	{
 		auth := v1.Group("/auth")
 		{
-			auth.POST("/register", apiAuth.Register)
-			auth.POST("/login", authMiddleware.LoginHandler)
-			auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+			apiAuth.Routes(auth, authMiddleware)
 		}
 		user := v1.Group("/user")
 		user.Use(authMiddleware.MiddlewareFunc())

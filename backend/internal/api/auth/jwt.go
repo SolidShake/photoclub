@@ -39,7 +39,22 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 				Email: claims[IdentityKey].(string),
 			}
 		},
-		Authenticator: Login,
+		Authenticator: func(c *gin.Context) (interface{}, error) {
+			var loginVals login
+			if err := c.ShouldBind(&loginVals); err != nil {
+				return "", jwt.ErrMissingLoginValues
+			}
+			email := loginVals.Email
+			password := loginVals.Password
+
+			if (email == "admin" && password == "admin") || (email == "test" && password == "test") {
+				return &coreUser.User{
+					Email: email,
+				}, nil
+			}
+
+			return nil, ErrFailedAuthentication
+		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			if v, ok := data.(*coreUser.User); ok && v.Email == "admin" {
 				return true
