@@ -3,10 +3,15 @@ package auth
 import (
 	"net/http"
 
-	coreUser "github.com/SolidShake/photoclub/internal/core/user"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
+
+func Routes(router *gin.RouterGroup, jwtMiddleware *jwt.GinJWTMiddleware) {
+	router.POST("/login", loginHandler(jwtMiddleware))
+	router.GET("/refresh_token", refreshHandler(jwtMiddleware))
+	router.GET("/register", register)
+}
 
 // Auth godoc
 // @Summary      Auth
@@ -18,21 +23,22 @@ import (
 // @Failure      401  {object}  interface{}
 // @Security     ApiKeyAuth
 // @Router       /auth/login [post]
-func Login(c *gin.Context) (interface{}, error) {
-	var loginVals login
-	if err := c.ShouldBind(&loginVals); err != nil {
-		return "", jwt.ErrMissingLoginValues
-	}
-	email := loginVals.Email
-	password := loginVals.Password
+func loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
+	return ginJWT.LoginHandler
+}
 
-	if (email == "admin" && password == "admin") || (email == "test" && password == "test") {
-		return &coreUser.User{
-			Email: email,
-		}, nil
-	}
-
-	return nil, ErrFailedAuthentication
+// Auth godoc
+// @Summary      Auth
+// @Description  Refresh user login token
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  interface{}
+// @Failure      401  {object}  interface{}
+// @Security     ApiKeyAuth
+// @Router       /auth/refresh_token [get]
+func refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
+	return ginJWT.RefreshHandler
 }
 
 // Auth godoc
@@ -45,6 +51,6 @@ func Login(c *gin.Context) (interface{}, error) {
 // @Failure      400  {object}  interface{}
 // @Security     ApiKeyAuth
 // @Router       /auth/register [post]
-func Register(ctx *gin.Context) {
+func register(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
