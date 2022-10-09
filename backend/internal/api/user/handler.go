@@ -7,7 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserHandler(c *gin.Context) {
+type Handler struct {
+	service *coreUser.Service
+}
+
+func NewHandler(service *coreUser.Service) *Handler {
+	return &Handler{service: service}
+}
+
+func (h Handler) UserHandler(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	user, _ := c.Get(auth.IdentityKey)
 	c.JSON(200, gin.H{

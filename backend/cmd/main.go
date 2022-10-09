@@ -1,15 +1,22 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/SolidShake/photoclub/db"
 	_ "github.com/SolidShake/photoclub/docs"
 
 	apiAuth "github.com/SolidShake/photoclub/internal/api/auth"
 	apiUser "github.com/SolidShake/photoclub/internal/api/user"
+
+	coreUser "github.com/SolidShake/photoclub/internal/core/user"
 )
 
 // @title           Photoclub API
@@ -33,23 +40,43 @@ import (
 // @description					Description for what is this security definition being used
 
 func main() {
-	r := gin.Default()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dbUser, dbPassword, dbName :=
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB")
+	database, err := db.Initialize(dbUser, dbPassword, dbName)
+	if err != nil {
+		log.Fatalf("Could not set up database: %v", err)
+	}
+	defer database.Conn.Close()
 
 	authMiddleware, err := apiAuth.AuthMiddleware()
 	if err != nil {
 		panic(err)
 	}
 
+	userRepository := coreUser.NewRepository(database)
+	userService := coreUser.NewService(userRepository)
+
+	authHandler := apiAuth.NewHandler(userService)
+	apiHandler := apiUser.NewHandler(userService)
+
+	r := gin.Default()
 	v1 := r.Group("/api/v1")
 	{
 		auth := v1.Group("/auth")
 		{
-			apiAuth.Routes(auth, authMiddleware)
+			authHandler.Routes(auth, authMiddleware)
 		}
 		user := v1.Group("/user")
 		user.Use(authMiddleware.MiddlewareFunc())
 		{
-			user.GET("", apiUser.UserHandler)
+			user.GET("", apiHandler.UserHandler)
 		}
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

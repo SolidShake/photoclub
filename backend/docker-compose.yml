@@ -1,14 +1,14 @@
 version: '3.7'
 services:
-  # db:
-  #   image: mongo
-  #   restart: always
-  #   platform: linux/x86_64
-  #   networks:
-  #     - default
-  #   ports:
-  #     - "27017:27017"
-  #   container_name: mongodb
+  postgres:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
 
   api:
     build:
@@ -16,5 +16,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    # depends_on:
-    #   - db
+    env_file: .env
+    depends_on:
+      - postgres
+volumes:
+  data:

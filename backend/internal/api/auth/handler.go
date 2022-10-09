@@ -1,16 +1,25 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 
+	coreUser "github.com/SolidShake/photoclub/internal/core/user"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
 
-func Routes(router *gin.RouterGroup, jwtMiddleware *jwt.GinJWTMiddleware) {
-	router.POST("/login", loginHandler(jwtMiddleware))
-	router.GET("/refresh_token", refreshHandler(jwtMiddleware))
-	router.GET("/register", register)
+type registerForm struct {
+	Email    string `form:"email" json:"email" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
+}
+
+type Handler struct {
+	service *coreUser.Service
+}
+
+func NewHandler(service *coreUser.Service) *Handler {
+	return &Handler{service: service}
 }
 
 // Auth godoc
@@ -23,7 +32,7 @@ func Routes(router *gin.RouterGroup, jwtMiddleware *jwt.GinJWTMiddleware) {
 // @Failure      401  {object}  interface{}
 // @Security     ApiKeyAuth
 // @Router       /auth/login [post]
-func loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
+func (h Handler) loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
 	return ginJWT.LoginHandler
 }
 
@@ -37,7 +46,7 @@ func loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
 // @Failure      401  {object}  interface{}
 // @Security     ApiKeyAuth
 // @Router       /auth/refresh_token [get]
-func refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
+func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
 	return ginJWT.RefreshHandler
 }
 
@@ -51,6 +60,31 @@ func refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
 // @Failure      400  {object}  interface{}
 // @Security     ApiKeyAuth
 // @Router       /auth/register [post]
-func register(ctx *gin.Context) {
-	ctx.Status(http.StatusCreated)
+func (h Handler) register(ctx *gin.Context) {
+	var registerVals registerForm
+	if err := ctx.ShouldBind(&registerVals); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid register values"})
+		return
+	}
+	email := registerVals.Email
+	password := registerVals.Password
+
+	err := h.service.CreateUser(email, password)
+	if err != nil {
+		// log error
+		fmt.Println(err)
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"email":    email,
+		"password": password,
+	})
+}
+
+func (h Handler) Routes(router *gin.RouterGroup, jwtMiddleware *jwt.GinJWTMiddleware) {
+	router.POST("/login", h.loginHandler(jwtMiddleware))
+	router.GET("/refresh_token", h.refreshHandler(jwtMiddleware))
+	router.POST("/register", h.register)
 }
