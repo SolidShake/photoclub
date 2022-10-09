@@ -24,3 +24,6 @@
 
 # IDEs and editors
 /.idea/
+
+#backend
+/backend/.env
