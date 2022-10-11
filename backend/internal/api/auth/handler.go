@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 
 	coreUser "github.com/SolidShake/photoclub/internal/core/user"
@@ -10,8 +9,8 @@ import (
 )
 
 type registerForm struct {
-	Email    string `form:"email" json:"email" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
+	Email    string `form:"email" json:"email" binding:"required,email"`
+	Password string `form:"password" json:"password" binding:"required,min=3,max=50"`
 }
 
 type Handler struct {
@@ -62,25 +61,22 @@ func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Contex
 // @Router       /auth/register [post]
 func (h Handler) register(ctx *gin.Context) {
 	var registerVals registerForm
-	if err := ctx.ShouldBind(&registerVals); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid register values"})
+	errs := validate(ctx, &registerVals)
+	if errs != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": errs})
 		return
 	}
+
 	email := registerVals.Email
 	password := registerVals.Password
 
 	err := h.service.CreateUser(email, password)
 	if err != nil {
-		// log error
-		fmt.Println(err)
-		ctx.Status(http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
-		"email":    email,
-		"password": password,
-	})
+	ctx.JSON(http.StatusCreated, gin.H{"message": "user created"})
 }
 
 func (h Handler) Routes(router *gin.RouterGroup, jwtMiddleware *jwt.GinJWTMiddleware) {

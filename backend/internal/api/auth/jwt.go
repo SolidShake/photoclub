@@ -18,7 +18,7 @@ type login struct {
 
 var IdentityKey = "id"
 
-func AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
+func AuthMiddleware(userService *coreUser.Service) (*jwt.GinJWTMiddleware, error) {
 	return jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "test zone",
 		Key:         []byte("secret key"),
@@ -47,16 +47,14 @@ func AuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			email := loginVals.Email
 			password := loginVals.Password
 
-			if (email == "admin" && password == "admin") || (email == "test" && password == "test") {
-				return &coreUser.User{
-					Email: email,
-				}, nil
+			user, err := userService.GetUser(email, password)
+			if err != nil {
+				return "", ErrFailedAuthentication
 			}
-
-			return nil, ErrFailedAuthentication
+			return user, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*coreUser.User); ok && v.Email == "admin" {
+			if _, ok := data.(*coreUser.User); ok {
 				return true
 			}
 
