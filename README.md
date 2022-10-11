@@ -11,3 +11,8 @@ make backend_start
 ```
 make backend_stop
 ```
+
+### To see backend docs:
+```
+http://localhost:8080/swagger/index.html
+```
