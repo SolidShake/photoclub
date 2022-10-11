@@ -1,4 +1,47 @@
 basePath: /api/v1
+definitions:
+  auth.ApiError:
+    properties:
+      field:
+        type: string
+      msg:
+        type: string
+    type: object
+  auth.registerForm:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.tokenResponse:
+    properties:
+      code:
+        type: integer
+      expire:
+        type: string
+      token:
+        type: string
+    type: object
+  user.errorResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  user.userResponse:
+    properties:
+      email:
+        type: string
+      userID:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -18,26 +61,31 @@ paths:
       consumes:
       - application/json
       description: Login user
+      parameters:
+      - description: register form
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.registerForm'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: object
+            $ref: '#/definitions/auth.tokenResponse'
         "401":
           description: Unauthorized
           schema:
-            type: object
+            $ref: '#/definitions/auth.ApiError'
       security:
       - ApiKeyAuth: []
       summary: Auth
       tags:
-      - accounts
+      - Auth
   /auth/refresh_token:
     get:
-      consumes:
-      - application/json
       description: Refresh user login token
       produces:
       - application/json
@@ -45,37 +93,61 @@ paths:
         "200":
           description: OK
           schema:
-            type: object
+            $ref: '#/definitions/auth.tokenResponse'
         "401":
           description: Unauthorized
           schema:
-            type: object
+            $ref: '#/definitions/auth.ApiError'
       security:
       - ApiKeyAuth: []
       summary: Auth
       tags:
-      - accounts
+      - Auth
   /auth/register:
     post:
-      consumes:
-      - application/json
       description: register user
+      parameters:
+      - description: register form
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.registerForm'
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            type: object
-        "400":
-          description: Bad Request
+            $ref: '#/definitions/auth.tokenResponse'
+        "401":
+          description: Unauthorized
           schema:
-            type: object
+            $ref: '#/definitions/auth.ApiError'
       security:
       - ApiKeyAuth: []
       summary: Auth
       tags:
-      - accounts
+      - Auth
+  /user:
+    get:
+      description: get user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.userResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/user.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: User
+      tags:
+      - Users
 securityDefinitions:
   ApiKeyAuth:
     in: header
