@@ -38,10 +38,10 @@ func (r Repository) GetUserById(id string) (User, error) {
 	}
 }
 
-func (r Repository) GetUserByEmailAndPass(email, pass string) (User, error) {
+func (r Repository) GetUserByEmail(email string) (User, error) {
 	user := User{}
-	query := `SELECT * FROM users WHERE email = $1, password = $2;`
-	row := r.db.Conn.QueryRow(query, email, pass)
+	query := `SELECT * FROM users WHERE email = $1;`
+	row := r.db.Conn.QueryRow(query, email)
 	switch err := row.Scan(&user.ID, &user.Email, &user.Password, &user.CreatedAt); err {
 	case sql.ErrNoRows:
 		return user, db.ErrNoMatch

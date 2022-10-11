@@ -21,6 +21,5 @@ func (h Handler) UserHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"userID": claims[auth.IdentityKey],
 		"email":  user.(*coreUser.User).Email,
-		"text":   "Hello World.",
 	})
 }

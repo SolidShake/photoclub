@@ -55,16 +55,16 @@ func main() {
 	}
 	defer database.Conn.Close()
 
-	authMiddleware, err := apiAuth.AuthMiddleware()
-	if err != nil {
-		panic(err)
-	}
-
 	userRepository := coreUser.NewRepository(database)
 	userService := coreUser.NewService(userRepository)
 
 	authHandler := apiAuth.NewHandler(userService)
 	apiHandler := apiUser.NewHandler(userService)
+
+	authMiddleware, err := apiAuth.AuthMiddleware(userService)
+	if err != nil {
+		panic(err)
+	}
 
 	r := gin.Default()
 	v1 := r.Group("/api/v1")
