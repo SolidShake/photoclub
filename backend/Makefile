@@ -10,10 +10,10 @@ backend_stop:
 	cd $(CUR_DIR) && docker-compose down
 
 migrate_up_dev:
-	migrate -database "postgres://photoclub:photoclub_pass@localhost:5432/photoclub_db?sslmode=disable" -path db/migrations up
+	cd $(CUR_DIR) && migrate -database "postgres://photoclub:photoclub_pass@localhost:5432/photoclub_db?sslmode=disable" -path db/migrations up
 
 migrate_down_dev:
-	migrate -database "postgres://photoclub:photoclub_pass@localhost:5432/photoclub_db?sslmode=disable" -path db/migrations up
+	cd $(CUR_DIR) && migrate -database "postgres://photoclub:photoclub_pass@localhost:5432/photoclub_db?sslmode=disable" -path db/migrations down
 
 swag:
 	cd $(CUR_DIR) && swag init -g cmd/main.go
