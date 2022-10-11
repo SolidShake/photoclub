@@ -128,11 +128,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/auth.tokenResponse"
-                        }
+                    "201": {
+                        "description": "User created"
                     },
                     "401": {
                         "description": "Unauthorized",
