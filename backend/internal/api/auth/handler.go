@@ -61,8 +61,8 @@ func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Contex
 // @Tags         Auth
 // @Produce      json
 // @Param        request body registerForm true "register form"
-// @Success      200  {object}  tokenResponse
-// @Failure      401  {object}  ApiError|
+// @Success      201 "User created"
+// @Failure      401  {object}  ApiError
 // @Security     ApiKeyAuth
 // @Router       /auth/register [post]
 func (h Handler) register(ctx *gin.Context) {
