@@ -40,9 +40,12 @@ import (
 // @description					Description for what is this security definition being used
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		err := godotenv.Load(".env.dist")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	dbUser, dbPassword, dbName :=
@@ -54,6 +57,8 @@ func main() {
 		log.Fatalf("Could not set up database: %v", err)
 	}
 	defer database.Conn.Close()
+
+	db.MigrationUp(database)
 
 	userRepository := coreUser.NewRepository(database)
 	userService := coreUser.NewService(userRepository)
