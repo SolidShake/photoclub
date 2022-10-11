@@ -13,6 +13,12 @@ type registerForm struct {
 	Password string `form:"password" json:"password" binding:"required,min=3,max=50"`
 }
 
+type tokenResponse struct {
+	Code   int    `json:"code"`
+	Expire string `json:"expire"`
+	Token  string `json:"token"`
+}
+
 type Handler struct {
 	service *coreUser.Service
 }
@@ -24,11 +30,12 @@ func NewHandler(service *coreUser.Service) *Handler {
 // Auth godoc
 // @Summary      Auth
 // @Description  Login user
-// @Tags         accounts
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  interface{}
-// @Failure      401  {object}  interface{}
+// @Param        request body registerForm true "register form"
+// @Success      200  {object}  tokenResponse
+// @Failure      401  {object}  ApiError
 // @Security     ApiKeyAuth
 // @Router       /auth/login [post]
 func (h Handler) loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
@@ -38,11 +45,10 @@ func (h Handler) loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context)
 // Auth godoc
 // @Summary      Auth
 // @Description  Refresh user login token
-// @Tags         accounts
-// @Accept       json
+// @Tags         Auth
 // @Produce      json
-// @Success      200  {object}  interface{}
-// @Failure      401  {object}  interface{}
+// @Success      200  {object}  tokenResponse
+// @Failure      401  {object}  ApiError
 // @Security     ApiKeyAuth
 // @Router       /auth/refresh_token [get]
 func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
@@ -52,11 +58,11 @@ func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Contex
 // Auth godoc
 // @Summary      Auth
 // @Description  register user
-// @Tags         accounts
-// @Accept       json
+// @Tags         Auth
 // @Produce      json
-// @Success      201  {object}  interface{}
-// @Failure      400  {object}  interface{}
+// @Param        request body registerForm true "register form"
+// @Success      200  {object}  tokenResponse
+// @Failure      401  {object}  ApiError|
 // @Security     ApiKeyAuth
 // @Router       /auth/register [post]
 func (h Handler) register(ctx *gin.Context) {
@@ -76,7 +82,7 @@ func (h Handler) register(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "user created"})
+	ctx.Status(http.StatusCreated)
 }
 
 func (h Handler) Routes(router *gin.RouterGroup, jwtMiddleware *jwt.GinJWTMiddleware) {
