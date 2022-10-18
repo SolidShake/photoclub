@@ -1,25 +1,37 @@
-import logo from './logo.svg';
+import { Outlet } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 import './App.css';
 
-function App() {
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      light: '#f3e5f5',
+      main: '#ce93d8',
+      dark: '#ab47bc',
+    },
+    secondary: {
+      light: '#e3f2fd',
+      main: '#90caf9',
+      dark: '#42a5f5',
+    },
+  },
+});
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <main className="main">
+        <div className="main__container">
+          <Outlet/>
+        </div>
+      </main>
+    </ThemeProvider>
   );
 }
-
-export default App;
