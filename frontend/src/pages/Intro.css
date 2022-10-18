@@ -1,0 +1,56 @@
+.intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.text-container {
+    margin: 0 32px 32px 0;
+    color: #FFFFFF;
+}
+
+.title {
+    margin: 0 0 12px;
+    font-size: 80px;
+    line-height: 1.25;
+}
+
+.description {
+    margin: 0;
+    font-size: 36px;
+    line-height: 1.25;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 520px;
+    padding: 24px;
+    align-self: center;
+    border: 1px solid #FFFFFF;
+    border-radius: 4px;
+}
+
+.form__submit {
+    margin-top: 24px;
+}
+
+.tabs {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+@media (min-width: 1024px) {
+    .intro {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-top: 200px;
+    }
+
+    .form-container {
+        align-self: flex-start;
+    }
+}
