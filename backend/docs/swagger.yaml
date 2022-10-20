@@ -7,6 +7,18 @@ definitions:
       msg:
         type: string
     type: object
+  auth.loginForm:
+    properties:
+      email_or_nickname:
+        type: string
+      password:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email_or_nickname
+    - password
+    type: object
   auth.registerForm:
     properties:
       email:
@@ -67,12 +79,12 @@ paths:
       - application/json
       description: Login user
       parameters:
-      - description: register form
+      - description: login form
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/auth.registerForm'
+          $ref: '#/definitions/auth.loginForm'
       produces:
       - application/json
       responses:

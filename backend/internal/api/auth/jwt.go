@@ -9,11 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ErrFailedAuthentication = errors.New("incorrect Email or Password")
+var (
+	ErrMissingLoginValues   = errors.New("missing Email, Nickname or Password")
+	ErrFailedAuthentication = errors.New("incorrect Email, Nickname or Password")
+)
 
-type login struct {
-	Email    string `form:"email" json:"email" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
+type loginForm struct {
+	EmailOrNickname string `form:"email_or_nickname" json:"email_or_nickname" binding:"required"`
+	Password        string `form:"password" json:"password" binding:"required,min=3,max=50"`
 }
 
 var IdentityKey = "id"
@@ -40,14 +43,14 @@ func AuthMiddleware(userService *coreUser.Service) (*jwt.GinJWTMiddleware, error
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals login
+			var loginVals loginForm
 			if err := c.ShouldBind(&loginVals); err != nil {
-				return "", jwt.ErrMissingLoginValues
+				return "", ErrMissingLoginValues
 			}
-			email := loginVals.Email
+			emailOrNickname := loginVals.EmailOrNickname
 			password := loginVals.Password
 
-			user, err := userService.GetUser(email, password)
+			user, err := userService.GetUser(emailOrNickname, password)
 			if err != nil {
 				return "", ErrFailedAuthentication
 			}

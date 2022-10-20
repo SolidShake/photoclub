@@ -28,7 +28,7 @@ func (r Repository) CreateUser(email, nickname, password string) error {
 
 func (r Repository) GetUserById(id string) (User, error) {
 	user := User{}
-	query := `SELECT * FROM users WHERE 1 = $1`
+	query := `SELECT id, nickname, email, password, created_at FROM users WHERE id = $1`
 	row := r.db.Conn.QueryRow(query, id)
 	switch err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.CreatedAt); err {
 	case sql.ErrNoRows:
@@ -40,7 +40,7 @@ func (r Repository) GetUserById(id string) (User, error) {
 
 func (r Repository) GetUserByEmail(email string) (User, error) {
 	user := User{}
-	query := `SELECT * FROM users WHERE email = $1;`
+	query := `SELECT id, nickname, email, password, created_at FROM users WHERE email = $1;`
 	row := r.db.Conn.QueryRow(query, email)
 	switch err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.CreatedAt); err {
 	case sql.ErrNoRows:
@@ -52,7 +52,7 @@ func (r Repository) GetUserByEmail(email string) (User, error) {
 
 func (r Repository) GetUserByNickname(nickname string) (User, error) {
 	user := User{}
-	query := `SELECT * FROM users WHERE nickname = $1;`
+	query := `SELECT id, nickname, email, password, created_at FROM users WHERE nickname = $1;`
 	row := r.db.Conn.QueryRow(query, nickname)
 	switch err := row.Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.CreatedAt); err {
 	case sql.ErrNoRows:
