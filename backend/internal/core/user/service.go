@@ -39,10 +39,16 @@ func (s Service) CreateUser(email, nickname, password string) error {
 	return s.repository.CreateUser(email, nickname, password)
 }
 
-func (s Service) GetUser(email, password string) (*User, error) {
-	user, err := s.repository.GetUserByEmail(email)
+func (s Service) GetUser(emailOrNickname, password string) (*User, error) {
+	var user User
+	var err error
+
+	user, err = s.repository.GetUserByEmail(emailOrNickname)
 	if err == db.ErrNoMatch {
-		return nil, errorUserNotFound
+		user, err = s.repository.GetUserByNickname(emailOrNickname)
+		if err == db.ErrNoMatch {
+			return nil, errorUserNotFound
+		}
 	}
 	if err != nil {
 		return nil, errors.New("internal error")

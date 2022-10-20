@@ -34,7 +34,7 @@ func NewHandler(service *coreUser.Service) *Handler {
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
-// @Param        request body registerForm true "register form"
+// @Param        request body loginForm true "login form"
 // @Success      200  {object}  tokenResponse
 // @Failure      401  {object}  ApiError
 // @Security     ApiKeyAuth

@@ -45,12 +45,12 @@ const docTemplate = `{
                 "summary": "Auth",
                 "parameters": [
                     {
-                        "description": "register form",
+                        "description": "login form",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.registerForm"
+                            "$ref": "#/definitions/auth.loginForm"
                         }
                     }
                 ],
@@ -181,6 +181,23 @@ const docTemplate = `{
                 },
                 "msg": {
                     "type": "string"
+                }
+            }
+        },
+        "auth.loginForm": {
+            "type": "object",
+            "required": [
+                "email_or_nickname",
+                "password"
+            ],
+            "properties": {
+                "email_or_nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
                 }
             }
         },
