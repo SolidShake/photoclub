@@ -23,7 +23,7 @@ func NewService(repository *Repository) *Service {
 	return &Service{repository: repository}
 }
 
-func (s Service) CreateUser(nickname, email, password string) error {
+func (s Service) CreateUser(email, nickname, password string) error {
 	if _, err := s.repository.GetUserByEmail(email); err != db.ErrNoMatch {
 		return errorEmailUsed
 	}
