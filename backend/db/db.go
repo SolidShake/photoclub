@@ -24,8 +24,6 @@ func Initialize(username, password, database string) (Database, error) {
 	db := Database{}
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		HOST, PORT, username, password, database)
-	log.Println(dsn) // debug
-
 	conn, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return db, err
@@ -36,5 +34,6 @@ func Initialize(username, password, database string) (Database, error) {
 		return db, err
 	}
 	log.Println("Database connection established")
+
 	return db, nil
 }

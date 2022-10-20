@@ -7,10 +7,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var errorEmailUsed = errors.New("email already exists")
-var errorInternal = errors.New("internal error")
-var errorUserNotFound = errors.New("user not found")
-var errorInvalidPassword = errors.New("invalid password")
+var (
+	errorEmailUsed       = errors.New("email already exists")
+	errorNicknameUsed    = errors.New("nickname already exists")
+	errorInternal        = errors.New("internal error")
+	errorUserNotFound    = errors.New("user not found")
+	errorInvalidPassword = errors.New("invalid password")
+)
 
 type Service struct {
 	repository *Repository
@@ -20,9 +23,12 @@ func NewService(repository *Repository) *Service {
 	return &Service{repository: repository}
 }
 
-func (s Service) CreateUser(email, password string) error {
+func (s Service) CreateUser(email, nickname, password string) error {
 	if _, err := s.repository.GetUserByEmail(email); err != db.ErrNoMatch {
 		return errorEmailUsed
+	}
+	if _, err := s.repository.GetUserByNickname(nickname); err != db.ErrNoMatch {
+		return errorNicknameUsed
 	}
 
 	password, err := s.hashPassword(password)
@@ -30,7 +36,7 @@ func (s Service) CreateUser(email, password string) error {
 		return errorInternal
 	}
 
-	return s.repository.CreateUser(email, password)
+	return s.repository.CreateUser(email, nickname, password)
 }
 
 func (s Service) GetUser(email, password string) (*User, error) {
