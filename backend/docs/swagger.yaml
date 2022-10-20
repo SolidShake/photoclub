@@ -11,12 +11,17 @@ definitions:
     properties:
       email:
         type: string
+      nickname:
+        maxLength: 50
+        minLength: 2
+        type: string
       password:
         maxLength: 50
         minLength: 3
         type: string
     required:
     - email
+    - nickname
     - password
     type: object
   auth.tokenResponse:

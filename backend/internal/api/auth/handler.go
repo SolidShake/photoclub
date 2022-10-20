@@ -9,6 +9,7 @@ import (
 )
 
 type registerForm struct {
+	Nickname string `form:"nickname" json:"nickname" binding:"required,min=2,max=50"`
 	Email    string `form:"email" json:"email" binding:"required,email"`
 	Password string `form:"password" json:"password" binding:"required,min=3,max=50"`
 }
@@ -73,10 +74,11 @@ func (h Handler) register(ctx *gin.Context) {
 		return
 	}
 
+	nickname := registerVals.Nickname
 	email := registerVals.Email
 	password := registerVals.Password
 
-	err := h.service.CreateUser(email, password)
+	err := h.service.CreateUser(nickname, email, password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
