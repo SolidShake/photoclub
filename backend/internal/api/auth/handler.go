@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	coreUser "github.com/SolidShake/photoclub/internal/core/user"
+	"github.com/SolidShake/photoclub/pkg/validation"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 )
@@ -36,7 +37,7 @@ func NewHandler(service *coreUser.Service) *Handler {
 // @Produce      json
 // @Param        request body loginForm true "login form"
 // @Success      200  {object}  tokenResponse
-// @Failure      401  {object}  ApiError
+// @Failure      401  {object}  validation.ApiError
 // @Security     ApiKeyAuth
 // @Router       /auth/login [post]
 func (h Handler) loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
@@ -49,7 +50,7 @@ func (h Handler) loginHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context)
 // @Tags         Auth
 // @Produce      json
 // @Success      200  {object}  tokenResponse
-// @Failure      401  {object}  ApiError
+// @Failure      401  {object}  validation.ApiError
 // @Security     ApiKeyAuth
 // @Router       /auth/refresh_token [get]
 func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Context) {
@@ -63,12 +64,12 @@ func (h Handler) refreshHandler(ginJWT *jwt.GinJWTMiddleware) func(c *gin.Contex
 // @Produce      json
 // @Param        request body registerForm true "register form"
 // @Success      201 "User created"
-// @Failure      401  {object}  ApiError
+// @Failure      401  {object}  validation.ApiError
 // @Security     ApiKeyAuth
 // @Router       /auth/register [post]
 func (h Handler) register(ctx *gin.Context) {
 	var registerVals registerForm
-	errs := validate(ctx, &registerVals)
+	errs := validation.Validate(ctx, &registerVals)
 	if errs != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": errs})
 		return

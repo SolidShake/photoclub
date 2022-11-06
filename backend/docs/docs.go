@@ -64,7 +64,7 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/auth.ApiError"
+                            "$ref": "#/definitions/validation.ApiError"
                         }
                     }
                 }
@@ -95,7 +95,7 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/auth.ApiError"
+                            "$ref": "#/definitions/validation.ApiError"
                         }
                     }
                 }
@@ -134,56 +134,76 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/auth.ApiError"
+                            "$ref": "#/definitions/validation.ApiError"
                         }
                     }
                 }
             }
         },
-        "/user": {
+        "/user/profile": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get user info",
+                "description": "get user profile",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "Profile"
                 ],
-                "summary": "User",
+                "summary": "Profile",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.userResponse"
+                            "$ref": "#/definitions/profile.profileResponse"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Profile",
+                "parameters": [
+                    {
+                        "description": "update profile form",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.errorResponse"
+                            "$ref": "#/definitions/profile.updateProfileForm"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "auth.ApiError": {
-            "type": "object",
-            "properties": {
-                "field": {
-                    "type": "string"
-                },
-                "msg": {
-                    "type": "string"
-                }
-            }
-        },
         "auth.loginForm": {
             "type": "object",
             "required": [
@@ -238,24 +258,41 @@ const docTemplate = `{
                 }
             }
         },
-        "user.errorResponse": {
+        "profile.profileResponse": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer"
+                "about": {
+                    "type": "string"
                 },
-                "message": {
+                "logo": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }
         },
-        "user.userResponse": {
+        "profile.updateProfileForm": {
             "type": "object",
             "properties": {
-                "email": {
+                "about": {
                     "type": "string"
                 },
-                "userID": {
+                "logo": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "validation.ApiError": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "msg": {
                     "type": "string"
                 }
             }

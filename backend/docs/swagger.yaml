@@ -1,12 +1,5 @@
 basePath: /api/v1
 definitions:
-  auth.ApiError:
-    properties:
-      field:
-        type: string
-      msg:
-        type: string
-    type: object
   auth.loginForm:
     properties:
       email_or_nickname:
@@ -45,18 +38,29 @@ definitions:
       token:
         type: string
     type: object
-  user.errorResponse:
+  profile.profileResponse:
     properties:
-      code:
-        type: integer
-      message:
+      about:
+        type: string
+      logo:
+        type: string
+      type:
         type: string
     type: object
-  user.userResponse:
+  profile.updateProfileForm:
     properties:
-      email:
+      about:
         type: string
-      userID:
+      logo:
+        type: string
+      type:
+        type: string
+    type: object
+  validation.ApiError:
+    properties:
+      field:
+        type: string
+      msg:
         type: string
     type: object
 host: localhost:8080
@@ -95,7 +99,7 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/auth.ApiError'
+            $ref: '#/definitions/validation.ApiError'
       security:
       - ApiKeyAuth: []
       summary: Auth
@@ -114,7 +118,7 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/auth.ApiError'
+            $ref: '#/definitions/validation.ApiError'
       security:
       - ApiKeyAuth: []
       summary: Auth
@@ -138,31 +142,50 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/auth.ApiError'
+            $ref: '#/definitions/validation.ApiError'
       security:
       - ApiKeyAuth: []
       summary: Auth
       tags:
       - Auth
-  /user:
+  /user/profile:
     get:
-      description: get user info
+      description: get user profile
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.userResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/user.errorResponse'
+            $ref: '#/definitions/profile.profileResponse'
+        "500":
+          description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: User
+      summary: Profile
       tags:
-      - Users
+      - Profile
+    put:
+      description: get user profile
+      parameters:
+      - description: update profile form
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/profile.updateProfileForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      security:
+      - ApiKeyAuth: []
+      summary: Profile
+      tags:
+      - Profile
 securityDefinitions:
   ApiKeyAuth:
     in: header

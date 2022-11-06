@@ -19,7 +19,10 @@ type loginForm struct {
 	Password        string `form:"password" json:"password" binding:"required,min=3,max=50"`
 }
 
-var IdentityKey = "id"
+var (
+	IdentityKey = "id"
+	EmailKey    = "email"
+)
 
 func AuthMiddleware(userService *coreUser.Service) (*jwt.GinJWTMiddleware, error) {
 	return jwt.New(&jwt.GinJWTMiddleware{
@@ -31,7 +34,8 @@ func AuthMiddleware(userService *coreUser.Service) (*jwt.GinJWTMiddleware, error
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*coreUser.User); ok {
 				return jwt.MapClaims{
-					IdentityKey: v.Email,
+					IdentityKey: v.ID,
+					EmailKey:    v.Email,
 				}
 			}
 			return jwt.MapClaims{}
@@ -39,7 +43,8 @@ func AuthMiddleware(userService *coreUser.Service) (*jwt.GinJWTMiddleware, error
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &coreUser.User{
-				Email: claims[IdentityKey].(string),
+				ID:    claims[IdentityKey].(string),
+				Email: claims[EmailKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -57,11 +62,8 @@ func AuthMiddleware(userService *coreUser.Service) (*jwt.GinJWTMiddleware, error
 			return user, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if _, ok := data.(*coreUser.User); ok {
-				return true
-			}
-
-			return false
+			_, ok := data.(*coreUser.User)
+			return ok
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{

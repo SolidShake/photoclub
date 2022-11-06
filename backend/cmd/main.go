@@ -14,8 +14,9 @@ import (
 	_ "github.com/SolidShake/photoclub/docs"
 
 	apiAuth "github.com/SolidShake/photoclub/internal/api/auth"
-	apiUser "github.com/SolidShake/photoclub/internal/api/user"
+	apiProfile "github.com/SolidShake/photoclub/internal/api/profile"
 
+	coreProfile "github.com/SolidShake/photoclub/internal/core/profile"
 	coreUser "github.com/SolidShake/photoclub/internal/core/user"
 )
 
@@ -63,8 +64,11 @@ func main() {
 	userRepository := coreUser.NewRepository(database)
 	userService := coreUser.NewService(userRepository)
 
+	profileRepository := coreProfile.NewRepository(database)
+	profileService := coreProfile.NewService(profileRepository)
+
 	authHandler := apiAuth.NewHandler(userService)
-	apiHandler := apiUser.NewHandler(userService)
+	apiProfile := apiProfile.NewHandler(profileService)
 
 	authMiddleware, err := apiAuth.AuthMiddleware(userService)
 	if err != nil {
@@ -81,7 +85,12 @@ func main() {
 		user := v1.Group("/user")
 		user.Use(authMiddleware.MiddlewareFunc())
 		{
-			user.GET("", apiHandler.UserHandler)
+			profile := user.Group("/profile")
+			profile.Use(authMiddleware.MiddlewareFunc())
+			{
+				profile.GET("", apiProfile.UserProfileGetHandler)
+				profile.PUT("", apiProfile.UserProfileUpdateHandler)
+			}
 		}
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
