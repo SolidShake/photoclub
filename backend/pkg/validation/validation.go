@@ -1,4 +1,4 @@
-package auth
+package validation
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ type ApiError struct {
 	Msg   string
 }
 
-func validate(ctx *gin.Context, obj any) []ApiError {
+func Validate(ctx *gin.Context, obj any) []ApiError {
 	err := ctx.ShouldBind(obj)
 
 	var out []ApiError
