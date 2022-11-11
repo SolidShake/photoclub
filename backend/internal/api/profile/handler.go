@@ -46,8 +46,11 @@ func (h Handler) UserProfileGetHandler(c *gin.Context) {
 
 	response := profileResponse{
 		Type:  profile.Type,
-		Logo:  profile.Logo,
 		About: profile.About,
+	}
+
+	if profile.Logo != "" {
+		response.Logo = h.service.GetLogoPath(profile.Logo)
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -57,8 +60,10 @@ func (h Handler) UserProfileGetHandler(c *gin.Context) {
 // @Summary      Profile
 // @Description  get user profile
 // @Tags         Profile
+// @Accept       multipart/form-data
 // @Produce      json
-// @Param        request body updateProfileForm true "update profile form"
+// @Param        file formData updateProfileForm true "update profile form"
+// @Param        file formData file true "picture file"
 // @Success      200
 // @Failure      400
 // @Security     ApiKeyAuth
@@ -73,10 +78,21 @@ func (h Handler) UserProfileUpdateHandler(c *gin.Context) {
 		return
 	}
 
+	var logoFileName string
+	if updateProfileVals.Logo != nil {
+		var err error
+		logoFileName, err = h.service.SaveLogo(c.SaveUploadedFile, updateProfileVals.Logo)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, errors.New("internal error"))
+			return
+		}
+	}
+
 	err := h.service.UpdateProfile(
 		claims[auth.IdentityKey].(string),
 		updateProfileVals.Type,
-		updateProfileVals.Logo,
+		logoFileName,
 		updateProfileVals.About,
 	)
 	if err != nil {
