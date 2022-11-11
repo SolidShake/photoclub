@@ -47,15 +47,6 @@ definitions:
       type:
         type: string
     type: object
-  profile.updateProfileForm:
-    properties:
-      about:
-        type: string
-      logo:
-        type: string
-      type:
-        type: string
-    type: object
   validation.ApiError:
     properties:
       field:
@@ -166,14 +157,21 @@ paths:
       tags:
       - Profile
     put:
+      consumes:
+      - multipart/form-data
       description: get user profile
       parameters:
-      - description: update profile form
-        in: body
-        name: request
+      - in: formData
+        name: about
+        type: string
+      - in: formData
+        name: type
+        type: string
+      - description: picture file
+        in: formData
+        name: file
         required: true
-        schema:
-          $ref: '#/definitions/profile.updateProfileForm'
+        type: file
       produces:
       - application/json
       responses:

@@ -12,6 +12,7 @@ import (
 
 	"github.com/SolidShake/photoclub/db"
 	_ "github.com/SolidShake/photoclub/docs"
+	"github.com/SolidShake/photoclub/pkg/storage"
 
 	apiAuth "github.com/SolidShake/photoclub/internal/api/auth"
 	apiProfile "github.com/SolidShake/photoclub/internal/api/profile"
@@ -61,11 +62,13 @@ func main() {
 
 	db.MigrationUp(database)
 
+	fileStorage := storage.NewFileStorage("./tmp")
+
 	userRepository := coreUser.NewRepository(database)
 	userService := coreUser.NewService(userRepository)
 
 	profileRepository := coreProfile.NewRepository(database)
-	profileService := coreProfile.NewService(profileRepository)
+	profileService := coreProfile.NewService(fileStorage, profileRepository)
 
 	authHandler := apiAuth.NewHandler(userService)
 	apiProfile := apiProfile.NewHandler(profileService)
@@ -93,6 +96,7 @@ func main() {
 			}
 		}
 	}
+	r.Static("/static", "./tmp")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run(":8080")

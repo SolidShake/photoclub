@@ -174,6 +174,9 @@ const docTemplate = `{
                     }
                 ],
                 "description": "get user profile",
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -183,13 +186,21 @@ const docTemplate = `{
                 "summary": "Profile",
                 "parameters": [
                     {
-                        "description": "update profile form",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/profile.updateProfileForm"
-                        }
+                        "type": "string",
+                        "name": "about",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "picture file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -259,20 +270,6 @@ const docTemplate = `{
             }
         },
         "profile.profileResponse": {
-            "type": "object",
-            "properties": {
-                "about": {
-                    "type": "string"
-                },
-                "logo": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "profile.updateProfileForm": {
             "type": "object",
             "properties": {
                 "about": {
